@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Political Dynasties in the Philippines</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #050505;
+    color: white;
+}
+
+a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(244, 197, 66, 0.5);
+    transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+a:hover {
+    color: #f4c542;
+    text-decoration-color: #f4c542;
+}
+
+/* =========================
+   HERO & NAV
+========================= */
+
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 15px 30px;
+    background: rgba(5,5,5,.9);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid #222;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+nav button {
+    background: none;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.hero {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, rgba(0, 50, 100, 0.5), #050505 65%);
+}
+
+.hero-content {
+    z-index: 5;
+    max-width: 900px;
+    padding: 30px;
+}
+
+.hero h1 {
+    font-size: clamp(38px, 6vw, 80px);
+    line-height: .95;
+    margin: 20px 0;
+    letter-spacing: -2px;
+}
+
+.hero h1 span {
+    color: #f4c542;
+}
+
+.hero p {
+    color: #bfc7d4;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.explore {
+    margin-top: 20px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 50px;
+    background: #f4c542;
+    color: #111;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+    transition: .3s;
+}
+
+.explore:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(244,197,66,.4);
+}
+
+/* =========================
+   SECTIONS & LAYOUT
+========================= */
+
+section {
+    padding: 60px 6%;
+}
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+}
+
+.title {
+    font-size: clamp(28px, 4vw, 52px);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #9ca7b8;
+    max-width: 700px;
+    line-height: 1.6;
+}
+
+/* =========================
+   MAP & SMALL MARKERS
+========================= */
+
+.map-container {
+    margin-top: 30px;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: radial-gradient(circle, rgba(30,80,120,.25), transparent 70%);
+    border: 1px solid #292929;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.map {
+    position: relative;
+    width: min(650px, 92vw);
+}
+
+.map img {
+    width: 100%;
+    display: block;
+    filter: grayscale(0.85) brightness(.8);
+    transition: .5s;
+}
+
+.map:hover img {
+    filter: grayscale(.2) brightness(.95);
+}
+
+/* Compact map markers to reduce overlap */
+.marker {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #e63946;
+    border: 1.5px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(230,57,70,.7);
+    animation: pulse 2s infinite;
+    z-index: 10;
+    padding: 0;
+    transform: translate(-50%, -50%);
+}
+
+.marker:hover {
+    transform: translate(-50%, -50%) scale(1.5);
+    z-index: 30;
+    background: #f4c542;
+}
+
+.marker.selected {
+    background: #f4c542;
+    z-index: 20;
+}
+
+.marker::after {
+    content: attr(data-name);
+    position: absolute;
+    left: 14px;
+    top: -5px;
+    white-space: nowrap;
+    background: rgba(17, 17, 17, 0.95);
+    color: white;
+    border: 1px solid #444;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+}
+
+.marker.selected::after {
+    opacity: 1;
+    visibility: visible;
+    border-color: #f4c542;
+}
+
+.marker:focus-visible {
+    outline: 2px solid #f4c542;
+    outline-offset: 4px;
+}
+
+/* Map Marker Coordinates */
+.m-ilocos-norte { left: 42%; top: 9%; }
+.m-ilocos-sur   { left: 43%; top: 15%; }
+.m-tarlac       { left: 45%; top: 27%; }
+.m-pampanga     { left: 47%; top: 30%; }
+.m-rizal        { left: 52%; top: 33%; }
+.m-manila       { left: 49%; top: 33.5%; }
+.m-makati       { left: 50.5%; top: 34.5%; }
+.m-taguig       { left: 52%; top: 35.5%; }
+.m-laspinas     { left: 49.5%; top: 36.5%; }
+.m-cavite       { left: 47%; top: 37%; }
+.m-batangas     { left: 47%; top: 40%; }
+.m-leyte        { left: 74%; top: 52%; }
+.m-cebu         { left: 67%; top: 56%; }
+.m-negros       { left: 61%; top: 58%; }
+.m-lanao        { left: 63%; top: 70%; }
+.m-maguindanao  { left: 64%; top: 75%; }
+.m-sultankudarat{ left: 65%; top: 79%; }
+.m-davao        { left: 74%; top: 78%; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(230,57,70,.7); }
+    70% { box-shadow: 0 0 0 10px rgba(230,57,70,0); }
+    100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); }
+}
+
+/* =========================
+   SEARCH BAR BELOW MAP
+========================= */
+
+.search-section {
+    margin-top: 25px;
+}
+
+.search-box {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 30px;
+    border: 1px solid #444;
+    background: #111;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #f4c542;
+    box-shadow: 0 0 20px rgba(244,197,66,0.25);
+}
+
+.search-results {
+    margin-top: 8px;
+    color: #aeb7c5;
+    font-size: 14px;
+}
+
+.search-results button {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 11px 16px;
+    border: 0;
+    border-bottom: 1px solid #292929;
+    background: #181818;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.search-results button:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.search-results button:last-child {
+    border-bottom: 0;
+    border-radius: 0 0 12px 12px;
+}
+
+.search-results button:hover,
+.search-results button:focus-visible {
+    background: #242424;
+    color: #f4c542;
+    outline: none;
+}
+
+.location-panel {
+    margin-top: 20px;
+    padding: 20px 25px;
+    border-radius: 18px;
+    background: #111;
+    border: 1px solid #292929;
+    display: none;
+    animation: slideUp .4s ease;
+}
+
+.location-panel.show {
+    display: block;
+}
+
+.location-panel h2 {
+    color: #f4c542;
+    margin-top: 0;
+}
+
+.location-panel p {
+    color: #aeb7c5;
+    line-height: 1.6;
+}
+
+/* =========================
+   GENEALOGICAL FAMILY TREES
+========================= */
+
+.tree-section {
+    background: #080808;
+    border-top: 1px solid #1a1a1a;
+}
+
+.tree-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.tree-selector button {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    background: #111;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 13px;
+    transition: .3s;
+}
+
+.tree-selector button:hover,
+.tree-selector button.active {
+    background: #f4c542;
+    color: #111;
+    border-color: #f4c542;
+    font-weight: bold;
+}
+
+.tree-wrapper {
+    margin-top: 25px;
+    padding: 40px 15px;
+    overflow-x: auto;
+    background: #111;
+    border-radius: 20px;
+    border: 1px solid #252525;
+}
+
+/* Tree Structural Connectors */
+.tree-node-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    padding-top: 20px;
+}
+
+.tree-node-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background: #444;
+}
+
+.tree-node-group.root-group::before {
+    display: none;
+}
+
+.couple-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    gap: 12px;
+    padding: 0 8px;
+}
+
+.couple-container::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background: #444;
+}
+
+.couple-line {
+    height: 2px;
+    width: 16px;
+    background: #f4c542;
+}
+
+.children-row {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.children-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    background: #444;
+}
+
+.children-row > .tree-node-group {
+    padding: 0 10px;
+}
+
+/* Enhanced Individual Card */
+.person-card {
+    min-width: 180px;
+    max-width: 210px;
+    padding: 14px 10px;
+    text-align: center;
+    border-radius: 14px;
+    background: #181818;
+    border: 1px solid #333;
+    transition: .3s;
+    position: relative;
+    z-index: 2;
+}
+
+.person-card:hover {
+    transform: translateY(-4px);
+    border-color: #f4c542;
+    box-shadow: 0 8px 20px rgba(0,0,0,.6);
+}
+
+.person-card .avatar {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 15px;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.25);
+}
+
+.avatar.male {
+    background: linear-gradient(135deg, #0077b6, #0096c7);
+}
+
+.avatar.female {
+    background: linear-gradient(135deg, #e63946, #ff758f);
+}
+
+.person-card strong {
+    display: block;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.person-card .meta-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: #252525;
+    color: #f4c542;
+    margin: 4px 0;
+}
+
+.person-card .meta-details {
+    font-size: 11px;
+    color: #aeb7c5;
+    line-height: 1.4;
+    text-align: left;
+    margin-top: 6px;
+    border-top: 1px solid #282828;
+    padding-top: 6px;
+}
+
+.person-card .meta-details div {
+    margin-bottom: 2px;
+}
+
+/* =========================
+   MODAL & FOOTER
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    width: min(550px, 95vw);
+    background: #151515;
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 30px;
+    animation: modalIn .3s ease;
+}
+
+.modal-content h2 {
+    color: #f4c542;
+    margin-top: 0;
+}
+
+.modal-content p {
+    color: #b5becb;
+    line-height: 1.6;
+}
+
+.close {
+    float: right;
+    border: none;
+    background: #292929;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* =========================
+   INFORMATION CARDS
+========================= */
+
+.info-section {
+    background: #080808;
+    border-top: 1px solid #1a1a1a;
+}
+
+.info-carousel {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.info-carousel-viewport {
+    overflow: hidden;
+    border-radius: 22px;
+    touch-action: pan-y;
+}
+
+.info-grid {
+    display: flex;
+    gap: 0;
+    transition: transform .85s cubic-bezier(.22, 1, .36, 1);
+    will-change: transform;
+}
+
+.info-slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: 10px;
+}
+
+.info-arrow {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #4a4128;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #201d15, #111);
+    color: #f4c542;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(0,0,0,.35);
+    transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.info-arrow:hover:not(:disabled),
+.info-arrow:focus-visible {
+    transform: scale(1.08);
+    background: #292313;
+    box-shadow: 0 0 20px rgba(244,197,66,.2);
+    outline: 2px solid #f4c542;
+    outline-offset: 3px;
+}
+
+.info-arrow:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.info-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.info-pagination button {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #555;
+    cursor: pointer;
+    transition: transform .2s, background .2s;
+}
+
+.info-pagination button[aria-current="true"] {
+    background: #f4c542;
+    transform: scale(1.3);
+}
+
+.info-card {
+    --card-accent: #f4c542;
+    min-height: 220px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #191919, #0e0e0e 72%);
+    border: 1px solid #34312a;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .28), inset 0 1px rgba(255,255,255,.04);
+    cursor: pointer;
+    transform: translateY(0) scale(1);
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease, background .35s ease;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: 180px;
+    height: 180px;
+    top: -95px;
+    right: -70px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244,197,66,.18), transparent 70%);
+    transition: transform .4s ease, opacity .4s ease;
+}
+
+.info-card::after {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0;
+    width: 48px;
+    height: 3px;
+    border-radius: 0 0 4px 4px;
+    background: var(--card-accent);
+    box-shadow: 0 0 18px rgba(244,197,66,.55);
+}
+
+.info-card:hover,
+.info-card:focus-visible {
+    transform: translateY(-6px);
+    border-color: rgba(244,197,66,.65);
+    box-shadow: 0 18px 38px rgba(0,0,0,.45), 0 0 24px rgba(244,197,66,.08);
+    outline: none;
+}
+
+ .info-card.expanded {
+    z-index: 3;
+    min-height: 320px;
+    padding: 38px;
+    transform: translateY(-8px) scale(1.06);
+    background: linear-gradient(145deg, #211e14, #111 75%);
+    border-color: var(--card-accent);
+    box-shadow: 0 24px 50px rgba(0,0,0,.58), 0 0 28px rgba(244,197,66,.15);
+}
+
+.info-card.expanded::before {
+    transform: scale(1.5);
+}
+
+.info-card h3 {
+    margin-top: 8px;
+    color: var(--card-accent);
+    font-size: 20px;
+    letter-spacing: .2px;
+}
+
+.info-card p {
+    color: #b8c0cc;
+    line-height: 1.75;
+}
+
+.info-card .card-hint {
+    display: inline-block;
+    margin-top: 10px;
+    color: #8d8771;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: color .25s ease;
+}
+
+.info-card.expanded .card-hint {
+    color: var(--card-accent);
+}
+
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #697384;
+    border-top: 1px solid #222;
+}
+
+@media(max-width:700px) {
+    section { padding: 40px 15px; }
+    .map-container { min-height: 480px; }
+    .info-carousel { gap: 8px; }
+    .info-arrow { width: 38px; height: 38px; flex-basis: 38px; font-size: 22px; }
+    .info-slide { padding: 8px; }
+    .info-card.expanded { min-height: 280px; padding: 28px; transform: translateY(-4px) scale(1.03); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <div class="logo">PHILIPPINE POLITICS</div>
+    <button onclick="scrollToSection('mapSection')">Explore Map</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <p style="letter-spacing: 2px; color: #f4c542; font-weight: bold;">INTERACTIVE MAP & GENEALOGICAL ARCHIVE</p>
+        <h1>Political <span>Dynasties</span><br>in the Philippines</h1>
+        <p>Select any province or dynasty to explore multi-generational family trees, positions, relations, and documented histories.</p>
+        <button class="explore" onclick="scrollToSection('mapSection')">EXPLORE THE MAP ↓</button>
+    </div>
+</section>
+
+<!-- MAP SECTION -->
+<section id="mapSection">
+    <div class="container">
+        <h2 class="title">Choose a Province</h2>
+        <p class="subtitle">Click a marker on the map to display its political dynasty tree below.</p>
+
+        <div class="map-container">
+            <div class="map">
+                <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Provinces_of_the_Philippines.svg" alt="Provincial map of the Philippines">
+
+                <!-- COMPACT MARKERS -->
+                <button class="marker m-ilocos-norte" data-name="Ilocos Norte" onclick="selectLocation('marcos')"></button>
+                <button class="marker m-ilocos-sur" data-name="Ilocos Sur" onclick="selectLocation('singson')"></button>
+                <button class="marker m-tarlac" data-name="Tarlac" onclick="selectLocation('aquino')"></button>
+                <button class="marker m-pampanga" data-name="Pampanga" onclick="selectLocation('macapagal')"></button>
+                <button class="marker m-rizal" data-name="Rizal" onclick="selectLocation('ynares')"></button>
+                <button class="marker m-manila" data-name="San Juan / Manila" onclick="selectLocation('estrada')"></button>
+                <button class="marker m-makati" data-name="Makati" onclick="selectLocation('binay')"></button>
+                <button class="marker m-taguig" data-name="Taguig" onclick="selectLocation('cayetano')"></button>
+                <button class="marker m-laspinas" data-name="Las Piñas" onclick="selectLocation('villar')"></button>
+                <button class="marker m-cavite" data-name="Cavite" onclick="selectLocation('remulla')"></button>
+                <button class="marker m-batangas" data-name="Batangas" onclick="selectLocation('recto')"></button>
+                <button class="marker m-leyte" data-name="Leyte" onclick="selectLocation('romualdez')"></button>
+                <button class="marker m-cebu" data-name="Cebu" onclick="selectLocation('garcia')"></button>
+                <button class="marker m-negros" data-name="Negros Occidental" onclick="selectLocation('benitez')"></button>
+                <button class="marker m-lanao" data-name="Lanao del Norte" onclick="selectLocation('dimaporo')"></button>
+                <button class="marker m-maguindanao" data-name="Maguindanao" onclick="selectLocation('ampatuan')"></button>
+                <button class="marker m-sultankudarat" data-name="Sultan Kudarat" onclick="selectLocation('mangudadatu')"></button>
+                <button class="marker m-davao" data-name="Davao" onclick="selectLocation('duterte')"></button>
+            </div>
+        </div>
+
+        <!-- SEARCH BAR DIRECTLY BELOW MAP -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="search" id="searchInput" oninput="filterTrees()" placeholder="Search family tree by name, position, relation, or region..." aria-label="Search family trees">
+                <div id="searchResults" class="search-results" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div id="locationPanel" class="location-panel">
+            <h2 id="locationTitle">Select a location</h2>
+            <p id="locationDescription">Click a marker on the map above to select a political dynasty.</p>
+            <button class="explore" onclick="scrollToSection('treeSection')">VIEW FAMILY TREE ↓</button>
+        </div>
+    </div>
+</section>
+
+<!-- FAMILY TREE SECTION -->
+<section class="tree-section" id="treeSection">
+    <div class="container">
+        <h2 class="title">Interactive Family Trees</h2>
+        <p class="subtitle">Complete genealogical trees. Male = Blue | Female = Pink.</p>
+
+        <div class="tree-selector" id="treeSelectorBtns">
+            <!-- Dynamic Buttons -->
+        </div>
+
+        <div class="tree-wrapper" id="treeContainer">
+            <!-- Rendered Genealogical Diagram -->
+        </div>
+    </div>
+</section>
+
+<!-- INFORMATION SECTION -->
+<section class="info-section" id="learnMore">
+    <div class="container">
+        <h2 class="title">Learn More</h2>
+        <p class="subtitle">Explore the issue, build awareness, and consider possible solutions.</p>
+        <div class="info-carousel" aria-label="Learn more topics">
+            <button class="info-arrow" id="infoPrev" type="button" aria-label="Previous topic">&#8249;</button>
+            <div class="info-carousel-viewport" id="infoViewport" tabindex="0" aria-label="Learn more topics. Use the left and right arrow keys to browse.">
+                <div class="info-grid" id="infoTrack">
+                    <div class="info-slide">
+                        <article class="info-card" tabindex="0" role="button" aria-expanded="false" aria-label="Expand: What Is a Political Dynasty?">
+                            <h3>What Is a Political Dynasty?</h3>
+                            <p>Explanation</p>
+                            <span class="card-hint">Click to expand</span>
+                        </article>
+                    </div>
+                    <div class="info-slide">
+                        <article class="info-card" tabindex="0" role="button" aria-expanded="false" aria-label="Expand: Creating Awareness">
+                            <h3>Creating Awareness</h3>
+                            <p>Information</p>
+                            <span class="card-hint">Click to expand</span>
+                        </article>
+                    </div>
+                    <div class="info-slide">
+                        <article class="info-card" tabindex="0" role="button" aria-expanded="false" aria-label="Expand: Recommendations / Solutions">
+                            <h3>Recommendations / Solutions</h3>
+                            <p>Recommendations or proposed solutions</p>
+                            <span class="card-hint">Click to expand</span>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            <button class="info-arrow" id="infoNext" type="button" aria-label="Next topic">&#8250;</button>
+        </div>
+        <div class="info-pagination" id="infoPagination" aria-label="Choose a topic"></div>
+    </div>
+</section>
+
+<footer>
+    Political Dynasties in the Philippines — E-Tech Perfomance Task
+</footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="closeModal(event)">
+    <div class="modal-content">
+        <button class="close" onclick="closeModal()">×</button>
+        <h2 id="modalTitle">Person</h2>
+        <p id="modalText">Information</p>
+    </div>
+</div>
+
+<script>
+/* =========================
+   COMPLETE DYNASTY DATA
+========================= */
+
+const treeData = {
+    marcos: {
+        title: "Marcos Dynasty (Ilocos Norte)",
+        region: "Ilocos Region",
+        description: "National and regional political family spanning three generations.",
+        tree: {
+            couple: [
+                { name: "Ferdinand Marcos Sr.", gender: "M", year: "1949–1986", position: "10th President / Senate President", status: "Deceased", relation: "Patriarch", info: "Served as Representative (1949–1959), Senator (1959–1965), and President (1965–1986)." },
+                { name: "Imelda Romualdez-Marcos", gender: "F", year: "1975–2019", position: "First Lady / Governor / Representative", status: "Living", relation: "Matriarch", info: "Governor of Metro Manila (1975–1986) and Representative for Leyte & Ilocos Norte." }
+            ],
+            children: [
+                {
+                    single: { name: "Ferdinand Marcos Jr.", gender: "M", year: "1983–Present", position: "17th President / Senator / Governor", status: "In Office", relation: "Son", info: "Current President of the Philippines (2022–Present); former Governor and Senator." },
+                    children: [
+                        { single: { name: "Ferdinand Alexander Marcos", gender: "M", year: "2022–Present", position: "Representative (Ilocos Norte 1st)", status: "In Office", relation: "Grandson", info: "Senior Deputy Majority Leader of the House of Representatives." } }
+                    ]
+                },
+                {
+                    single: { name: "Imee Marcos", gender: "F", year: "1998–Present", position: "Senator / Governor", status: "In Office", relation: "Daughter", info: "Current Senator of the Philippines (2019–Present) and former Governor of Ilocos Norte." }
+                }
+            ]
+        }
+    },
+    duterte: {
+        title: "Duterte Dynasty (Davao City)",
+        region: "Davao Region",
+        description: "Dominant regional and national leadership in Mindanao and executive government.",
+        tree: {
+            single: { name: "Vicente Duterte", gender: "M", year: "1950s–1968", position: "Governor of Davao", status: "Deceased", relation: "Patriarch", info: "Former Governor of the undivided Davao province." },
+            children: [
+                {
+                    single: { name: "Rodrigo Duterte", gender: "M", year: "1988–2022", position: "16th President / Mayor of Davao", status: "Retired", relation: "Son", info: "16th President of the Philippines (2016–2022) and multi-term Davao Mayor." },
+                    children: [
+                        { single: { name: "Paolo Duterte", gender: "M", year: "2013–Present", position: "Representative (Davao 1st) / Vice Mayor", status: "In Office", relation: "Grandson", info: "Current Representative for Davao City 1st District." } },
+                        { single: { name: "Sara Duterte", gender: "F", year: "2007–Present", position: "Vice President / Mayor of Davao", status: "In Office", relation: "Granddaughter", info: "Current Vice President of the Philippines (2022–Present)." } },
+                        { single: { name: "Sebastian Duterte", gender: "M", year: "2019–Present", position: "Mayor of Davao City", status: "In Office", relation: "Grandson", info: "Current Mayor of Davao City." } }
+                    ]
+                }
+            ]
+        }
+    },
+    aquino: {
+        title: "Aquino Dynasty (Tarlac)",
+        region: "Central Luzon / National",
+        description: "Historical political family producing two Philippine Presidents across four generations.",
+        tree: {
+            single: { name: "Servillano Aquino", gender: "M", year: "1898", position: "Malolos Congress Delegate", status: "Deceased", relation: "Great-Grandfather", info: "Delegate to the Malolos Congress and revolutionary general." },
+            children: [
+                {
+                    single: { name: "Benigno Aquino Sr.", gender: "M", year: "1916–1944", position: "House Speaker / Senator", status: "Deceased", relation: "Grandfather", info: "Speaker of the House (1943–1944) and Cabinet Secretary." },
+                    children: [
+                        {
+                            couple: [
+                                { name: "Benigno Aquino Jr.", gender: "M", year: "1961–1972", position: "Senator / Governor of Tarlac", status: "Deceased", relation: "Father", info: "Opposition leader, Senator, and Governor of Tarlac." },
+                                { name: "Corazon Cojuangco-Aquino", gender: "F", year: "1986–1992", position: "11th President of the Philippines", status: "Deceased", relation: "Mother", info: "First female President of the Philippines following the 1986 Revolution." }
+                            ],
+                            children: [
+                                { single: { name: "Benigno Aquino III", gender: "M", year: "1998–2016", position: "15th President of the Philippines", status: "Deceased", relation: "Son", info: "15th President of the Philippines (2010–2016) and Senator." } }
+                            ]
+                        },
+                        { single: { name: "Paolo Benigno Bam Aquino", gender: "M", year: "2013–2019", position: "Senator of the Philippines", status: "Active", relation: "Grand-nephew", info: "Served as Senator from 2013 to 2019." } }
+                    ]
+                }
+            ]
+        }
+    },
+    ynares: {
+        title: "Ynares Dynasty (Rizal)",
+        region: "CALABARZON",
+        description: "Multi-generational political dynasty with local executive leadership across Rizal Province.",
+        tree: {
+            single: { name: "Casimiro Ynares Sr.", gender: "M", year: "1945–1955", position: "Mayor of Binangonan", status: "Deceased", relation: "Patriarch", info: "Served as Mayor of Binangonan, establishing the family's political presence in Rizal." },
+            children: [
+                {
+                    couple: [
+                        { name: "Casimiro Ynares Jr.", gender: "M", year: "1992–2007", position: "Governor of Rizal", status: "Living", relation: "Son", info: "Multi-term Governor of Rizal and former Chairman of the Laguna Lake Development Authority (LLDA)." },
+                        { name: "Rebecca Ynares", gender: "F", year: "2001–2022", position: "Governor of Rizal", status: "Living", relation: "Daughter-in-law", info: "Served as Governor of Rizal." }
+                    ]
+                }
+            ]
+        }
+    },
+    estrada: {
+        title: "Ejercito-Estrada Dynasty (San Juan / Manila)",
+        region: "Metro Manila / Laguna",
+        description: "Prominent family in local metro administration and national legislative positions.",
+        tree: {
+            single: { name: "Joseph Ejercito Estrada", gender: "M", year: "1969–2019", position: "13th President / Vice President / Mayor", status: "Living", relation: "Patriarch", info: "13th President, Vice President, Senator, and Mayor of San Juan & Manila." },
+            children: [
+                { single: { name: "Jinggoy Estrada", gender: "M", year: "1992–Present", position: "Senator / Mayor of San Juan", status: "In Office", relation: "Son", info: "Current Senator of the Philippines and former Mayor." } },
+                { single: { name: "JV Ejercito", gender: "M", year: "2001–Present", position: "Senator / Representative", status: "In Office", relation: "Son", info: "Current Senator of the Philippines and former Representative." } }
+            ]
+        }
+    },
+    macapagal: {
+        title: "Macapagal-Arroyo Dynasty (Pampanga)",
+        region: "Central Luzon",
+        description: "Family producing two Presidents of the Philippines and legislative leaders.",
+        tree: {
+            single: { name: "Diosdado Macapagal", gender: "M", year: "1949–1965", position: "9th President / Vice President", status: "Deceased", relation: "Patriarch", info: "9th President of the Philippines (1961–1965)." },
+            children: [
+                {
+                    single: { name: "Gloria Macapagal-Arroyo", gender: "F", year: "1992–Present", position: "14th President / Speaker / Senator", status: "In Office", relation: "Daughter", info: "14th President (2001–2010) and current Representative for Pampanga." },
+                    children: [
+                        { single: { name: "Juan Miguel Arroyo", gender: "M", year: "2004–2022", position: "Representative (Pampanga 2nd)", status: "Active", relation: "Grandson", info: "Former member of the House of Representatives." } },
+                        { single: { name: "Diosdado Dato Arroyo", gender: "M", year: "2007–2016", position: "Representative (Camarines Sur)", status: "Active", relation: "Grandson", info: "Former Representative for Camarines Sur." } }
+                    ]
+                }
+            ]
+        }
+    },
+    villar: {
+        title: "Villar Dynasty (Las Piñas)",
+        region: "Metro Manila / National",
+        description: "National Senate representation combined with real estate and local governance.",
+        tree: {
+            couple: [
+                { name: "Manuel Villar Jr.", gender: "M", year: "1992–2013", position: "Senate President / House Speaker", status: "Active", relation: "Patriarch", info: "Former Senate President and Speaker of the House." },
+                { name: "Cynthia Villar", gender: "F", year: "2001–Present", position: "Senator / Representative", status: "In Office", relation: "Matriarch", info: "Current Senator of the Philippines." }
+            ],
+            children: [
+                { single: { name: "Mark Villar", gender: "M", year: "2010–Present", position: "Senator / DPWH Secretary", status: "In Office", relation: "Son", info: "Current Senator and former Public Works Secretary." } },
+                { single: { name: "Camille Villar", gender: "F", year: "2019–Present", position: "Representative (Las Piñas)", status: "In Office", relation: "Daughter", info: "Current Representative for Las Piñas." } }
+            ]
+        }
+    },
+    binay: {
+        title: "Binay Dynasty (Makati City)",
+        region: "Metro Manila",
+        description: "Long-standing leadership of Makati City and national executive office.",
+        tree: {
+            couple: [
+                { name: "Jejomar Binay", gender: "M", year: "1986–2016", position: "Vice President / Mayor of Makati", status: "Active", relation: "Patriarch", info: "13th Vice President of the Philippines and long-time Mayor of Makati." },
+                { name: "Elenita Binay", gender: "F", year: "1998–2001", position: "Mayor of Makati City", status: "Retired", relation: "Matriarch", info: "Former Mayor of Makati City." }
+            ],
+            children: [
+                { single: { name: "Nancy Binay", gender: "F", year: "2013–Present", position: "Senator of the Philippines", status: "In Office", relation: "Daughter", info: "Current Senator of the Philippines." } },
+                { single: { name: "Mar-Len Abigail Binay", gender: "F", year: "2007–Present", position: "Mayor of Makati / Representative", status: "In Office", relation: "Daughter", info: "Current Mayor of Makati City." } },
+                { single: { name: "Jejomar Erwin Binay Jr.", gender: "M", year: "2010–2015", position: "Mayor of Makati City", status: "Active", relation: "Son", info: "Former Mayor of Makati City." } }
+            ]
+        }
+    },
+    cayetano: {
+        title: "Cayetano Dynasty (Taguig City)",
+        region: "Metro Manila",
+        description: "Multi-seat legislative dynasty in Taguig and national legislature.",
+        tree: {
+            single: { name: "Renato Cayetano", gender: "M", year: "1998–2003", position: "Senator of the Philippines", status: "Deceased", relation: "Patriarch", info: "Former Senator, lawyer, and broadcaster." },
+            children: [
+                { single: { name: "Pia Cayetano", gender: "F", year: "2004–Present", position: "Senator / Representative", status: "In Office", relation: "Daughter", info: "Current Senator of the Philippines." } },
+                {
+                    couple: [
+                        { name: "Alan Peter Cayetano", gender: "M", year: "1998–Present", position: "Senator / House Speaker / DFA Secretary", status: "In Office", relation: "Son", info: "Current Senator and former Speaker of the House." },
+                        { name: "Lani Lopez-Cayetano", gender: "F", year: "2007–Present", position: "Mayor of Taguig / Representative", status: "In Office", relation: "Daughter-in-law", info: "Current Mayor of Taguig City." }
+                    ]
+                }
+            ]
+        }
+    },
+    singson: {
+        title: "Singson Dynasty (Ilocos Sur)",
+        region: "Ilocos Region",
+        description: "Long-standing provincial executive stronghold in Ilocos Sur.",
+        tree: {
+            single: { name: "Luis Chavit Singson", gender: "M", year: "1972–2022", position: "Governor of Ilocos Sur / Mayor", status: "Active", relation: "Patriarch", info: "Long-time Governor of Ilocos Sur and Mayor of Narvacan." },
+            children: [
+                { single: { name: "Ryan Luis Singson", gender: "M", year: "2013–Present", position: "Governor / Vice Governor", status: "In Office", relation: "Son", info: "Former Governor and current Vice Governor of Ilocos Sur." } },
+                { single: { name: "Jeremias Singson", gender: "M", year: "2016–Present", position: "Governor of Ilocos Sur", status: "In Office", relation: "Brother", info: "Current Governor of Ilocos Sur." } }
+            ]
+        }
+    },
+    remulla: {
+        title: "Remulla Dynasty (Cavite)",
+        region: "CALABARZON",
+        description: "Decades of gubernatorial, congressional, and Cabinet executive seats in Cavite.",
+        tree: {
+            single: { name: "Juanito Remulla Sr.", gender: "M", year: "1979–1995", position: "Governor of Cavite", status: "Deceased", relation: "Patriarch", info: "Longest-serving Governor of Cavite." },
+            children: [
+                {
+                    single: { name: "Jesus Crispin Remulla", gender: "M", year: "2004–Present", position: "Justice Secretary / Representative", status: "In Office", relation: "Son", info: "Current Secretary of Justice and former Representative." },
+                    children: [
+                        { single: { name: "Crispin Diego Remulla", gender: "M", year: "2023–Present", position: "Representative (Cavite 7th)", status: "In Office", relation: "Grandson", info: "Current Representative for Cavite's 7th District." } }
+                    ]
+                },
+                { single: { name: "Juanito Victor Remulla Jr.", gender: "M", year: "2010–Present", position: "DILG Secretary / Governor", status: "In Office", relation: "Son", info: "Current DILG Secretary and former Cavite Governor." } }
+            ]
+        }
+    },
+    recto: {
+        title: "Recto Dynasty (Batangas)",
+        region: "CALABARZON",
+        description: "Historic parliamentary legacy coupled with modern Batangas leadership.",
+        tree: {
+            single: { name: "Claro M. Recto", gender: "M", year: "1931–1960", position: "Senator / Jurist / Assemblyman", status: "Deceased", relation: "Patriarch", info: "Renowned nationalist, Senator, and President of 1934 Constitutional Convention." },
+            children: [
+                {
+                    couple: [
+                        { name: "Ralph Recto", gender: "M", year: "1992–Present", position: "Finance Secretary / Senate President Pro Temp", status: "In Office", relation: "Grandson", info: "Current Secretary of Finance and former Senator." },
+                        { name: "Vilma Santos-Recto", gender: "F", year: "1998–2022", position: "Governor of Batangas / Representative", status: "Active", relation: "Granddaughter-in-law", info: "Former Governor of Batangas and Representative for Lipa." }
+                    ],
+                    children: [
+                        { single: { name: "Ryan Christian Recto", gender: "M", year: "2022–Present", position: "Public Representative / Advocate", status: "Active", relation: "Great-Grandson", info: "Active in regional public service in Batangas." } }
+                    ]
+                }
+            ]
+        }
+    },
+    romualdez: {
+        title: "Romualdez Dynasty (Leyte)",
+        region: "Eastern Visayas",
+        description: "Major political presence in Eastern Visayas and national parliamentary leadership.",
+        tree: {
+            single: { name: "Daniel Z. Romualdez", gender: "M", year: "1949–1965", position: "Speaker of the House", status: "Deceased", relation: "Patriarch", info: "Former Speaker of the House of Representatives." },
+            children: [
+                {
+                    single: { name: "Benjamin Romualdez", gender: "M", year: "1967–1986", position: "Governor of Leyte / Ambassador", status: "Deceased", relation: "Brother", info: "Former Governor of Leyte and diplomat." },
+                    children: [
+                        {
+                            couple: [
+                                { name: "Ferdinand Martin Romualdez", gender: "M", year: "2007–Present", position: "Speaker of the House of Representatives", status: "In Office", relation: "Nephew", info: "Current Speaker of the House of Representatives." },
+                                { name: "Yedda Marie Romualdez", gender: "F", year: "2016–Present", position: "Tingog Party-list Representative", status: "In Office", relation: "Niece-in-law", info: "Current Representative for Tingog Party-list." }
+                            ]
+                        },
+                        { single: { name: "Alfred Romualdez", gender: "M", year: "1998–Present", position: "Mayor of Tacloban City", status: "In Office", relation: "Nephew", info: "Current Mayor of Tacloban City." } }
+                    ]
+                }
+            ]
+        }
+    },
+    garcia: {
+        title: "Garcia Dynasty (Cebu)",
+        region: "Central Visayas",
+        description: "Dominant executive and legislative political dynasty in Cebu Province.",
+        tree: {
+            single: { name: "Pablo P. Garcia", gender: "M", year: "1987–2013", position: "Governor of Cebu / Representative", status: "Deceased", relation: "Patriarch", info: "Former Governor of Cebu and Deputy House Speaker." },
+            children: [
+                {
+                    single: { name: "Gwendolyn Garcia", gender: "F", year: "2004–Present", position: "Governor of Cebu", status: "In Office", relation: "Daughter", info: "Current Governor of Cebu Province." },
+                    children: [
+                        { single: { name: "Christina Garcia-Frasco", gender: "F", year: "2016–Present", position: "Tourism Secretary / Mayor", status: "In Office", relation: "Granddaughter", info: "Current Secretary of Tourism and former Mayor of Liloan." } }
+                    ]
+                },
+                { single: { name: "Pablo John Garcia", gender: "M", year: "2007–Present", position: "Representative (Cebu 3rd)", status: "In Office", relation: "Son", info: "Current Representative for Cebu 3rd District." } }
+            ]
+        }
+    },
+    benitez: {
+        title: "Benitez Dynasty (Negros Occidental)",
+        region: "Western Visayas",
+        description: "Long-standing public service and local governance across Negros Occidental.",
+        tree: {
+            single: { name: "Helena Z. Benitez", gender: "M", year: "1967–1972", position: "Senator of the Philippines", status: "Deceased", relation: "Patriarchal Figure", info: "Former Senator and educator." },
+            children: [
+                {
+                    single: { name: "Alfredo Albee Benitez", gender: "M", year: "2010–Present", position: "Mayor of Bacolod / Representative", status: "In Office", relation: "Grand-nephew", info: "Current Mayor of Bacolod City." },
+                    children: [
+                        { single: { name: "Javi Benitez", gender: "M", year: "2022–Present", position: "Mayor of Victorias City", status: "In Office", relation: "Great-Grand-nephew", info: "Current Mayor of Victorias City." } }
+                    ]
+                },
+                { single: { name: "Jose Francisco Kiko Benitez", gender: "M", year: "2019–Present", position: "TESDA Director General / Representative", status: "In Office", relation: "Grand-nephew", info: "Current Director General of TESDA." } }
+            ]
+        }
+    },
+    ampatuan: {
+        title: "Ampatuan Dynasty (Maguindanao)",
+        region: "BARMM",
+        description: "Historical local executive dominance in Maguindanao province.",
+        tree: {
+            single: { name: "Andal Ampatuan Sr.", gender: "M", year: "1988–2008", position: "Governor of Maguindanao", status: "Deceased", relation: "Patriarch", info: "Former Governor of Maguindanao." },
+            children: [
+                { single: { name: "Zaldy Ampatuan", gender: "M", year: "2005–2009", position: "ARMM Regional Governor", status: "Inactive", relation: "Son", info: "Former Regional Governor of ARMM." } },
+                { single: { name: "Sajid Islam Ampatuan", gender: "M", year: "2008–Present", position: "Mayor of Shariff Aguak / Governor", status: "In Office", relation: "Son", info: "Current Mayor of Shariff Aguak." } }
+            ]
+        }
+    },
+    mangudadatu: {
+        title: "Mangudadatu Dynasty (Sultan Kudarat & Maguindanao)",
+        region: "BARMM / SOCCSKSARGEN",
+        description: "Gubernatorial and congressional leadership across Sultan Kudarat and Maguindanao del Sur.",
+        tree: {
+            single: { name: "Esmael Toto Mangudadatu", gender: "M", year: "1998–2022", position: "Governor of Maguindanao / Rep.", status: "Active", relation: "Patriarch", info: "Former Governor of Maguindanao." },
+            children: [
+                {
+                    couple: [
+                        { name: "Suharto Teng Mangudadatu", gender: "M", year: "2007–Present", position: "TESDA Director / Governor", status: "In Office", relation: "Cousin", info: "Former Governor of Sultan Kudarat." },
+                        { name: "Mariam Sangki-Mangudadatu", gender: "F", year: "2022–Present", position: "Governor of Maguindanao del Sur", status: "In Office", relation: "Cousin-in-law", info: "Current Governor of Maguindanao del Sur." }
+                    ],
+                    children: [
+                        { single: { name: "Pax Ali Mangudadatu", gender: "M", year: "2022–Present", position: "Governor of Sultan Kudarat", status: "In Office", relation: "Nephew", info: "Current Governor of Sultan Kudarat." } }
+                    ]
+                }
+            ]
+        }
+    },
+    dimaporo: {
+        title: "Dimaporo Dynasty (Lanao del Norte)",
+        region: "Northern Mindanao",
+        description: "Continuous gubernatorial and congressional seats in Lanao del Norte over decades.",
+        tree: {
+            single: { name: "Mohammad Ali Dimaporo", gender: "M", year: "1949–1995", position: "Governor of Lanao / Representative", status: "Deceased", relation: "Patriarch", info: "Former Governor and Representative." },
+            children: [
+                {
+                    couple: [
+                        { name: "Abdullah Dimaporo", gender: "M", year: "1992–2022", position: "Representative / Governor", status: "Active", relation: "Son", info: "Former Governor and Representative for Lanao del Norte." },
+                        { name: "Imelda Quibranza-Dimaporo", gender: "F", year: "1998–Present", position: "Governor of Lanao del Norte", status: "In Office", relation: "Daughter-in-law", info: "Current Governor of Lanao del Norte." }
+                    ],
+                    children: [
+                        { single: { name: "Mohamad Khalid Dimaporo", gender: "M", year: "2007–Present", position: "Representative / Governor", status: "In Office", relation: "Grandson", info: "Current Representative for Lanao del Norte." } }
+                    ]
+                }
+            ]
+        }
+    }
+};
+
+let currentKey = "marcos";
+
+/* =========================
+   GENEALOGICAL RENDERER
+========================= */
+
+function getInitials(name) {
+    return name.replace(/(Sr\.|Jr\.|III|IV)/g, '').trim().split(" ").map(n => n[0]).slice(0, 2).join("");
+}
+
+function getWikiUrl(name) {
+    return `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(name)}`;
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[char]);
+}
+
+function createCardHTML(p) {
+    const genderClass = p.gender === 'F' ? 'female' : 'male';
+    const initials = escapeHTML(getInitials(p.name));
+    const wikiUrl = getWikiUrl(p.name);
+
+    return `
+        <div class="person-card" data-name="${escapeHTML(p.name)}" data-info="${escapeHTML(p.info)}">
+            <div class="avatar ${genderClass}">${initials}</div>
+            <strong>
+                <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer">${escapeHTML(p.name)}</a>
+            </strong>
+            <span class="meta-tag">${escapeHTML(p.relation)}</span>
+            <div class="meta-details">
+                <div><strong>Years:</strong> ${escapeHTML(p.year)}</div>
+                <div><strong>Office:</strong> ${escapeHTML(p.position)}</div>
+                <div><strong>Status:</strong> ${escapeHTML(p.status)}</div>
+            </div>
+        </div>
+    `;
+}
+
+function buildTreeHTML(node, isRoot = false) {
+    let html = `<div class="tree-node-group ${isRoot ? 'root-group' : ''}">`;
+
+    if (node.couple) {
+        html += `<div class="couple-container">`;
+        html += createCardHTML(node.couple[0]);
+        html += `<div class="couple-line"></div>`;
+        html += createCardHTML(node.couple[1]);
+        html += `</div>`;
+    } else if (node.single) {
+        html += createCardHTML(node.single);
+    }
+
+    if (node.children && node.children.length > 0) {
+        html += `<div class="children-row">`;
+        node.children.forEach(child => {
+            html += buildTreeHTML(child, false);
+        });
+        html += `</div>`;
+    }
+
+    html += `</div>`;
+    return html;
+}
+
+function renderTree(key) {
+    currentKey = key;
+    const container = document.getElementById("treeContainer");
+    if (treeData[key]) {
+        container.innerHTML = buildTreeHTML(treeData[key].tree, true);
+    } else {
+        container.innerHTML = `<p style="text-align:center; color:#9a9a9a;">Select a political family to view its genealogical tree structure.</p>`;
+    }
+
+    // Toggle active tab button style
+    document.querySelectorAll(".tree-selector button").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-key") === key);
+    });
+}
+
+function populateButtons() {
+    const container = document.getElementById("treeSelectorBtns");
+    container.innerHTML = "";
+    Object.keys(treeData).forEach(key => {
+        const btn = document.createElement("button");
+        btn.textContent = treeData[key].title.split(" ")[0];
+        btn.setAttribute("data-key", key);
+        btn.onclick = () => renderTree(key);
+        container.appendChild(btn);
+    });
+}
+
+/* =========================
+   MAP & SEARCH UTILITIES
+========================= */
+
+function selectFamily(key) {
+    if (!treeData[key]) return;
+
+    document.querySelectorAll(".marker").forEach(marker => {
+        marker.classList.toggle("selected", marker.getAttribute("onclick") === `selectLocation('${key}')`);
+    });
+
+    document.getElementById("locationTitle").textContent = treeData[key].title;
+    document.getElementById("locationDescription").textContent =
+        `${treeData[key].description} Region: ${treeData[key].region}.`;
+    document.getElementById("locationPanel").classList.add("show");
+    renderTree(key);
+}
+
+function selectLocation(key) {
+    if (!treeData[key]) return;
+
+    document.getElementById("searchInput").value = "";
+    document.getElementById("searchResults").textContent = "";
+    selectFamily(key);
+}
+
+function filterTrees() {
+    const q = document.getElementById("searchInput").value.trim().toLowerCase();
+    const results = document.getElementById("searchResults");
+    results.textContent = "";
+
+    if (!q) return;
+
+    const matches = Object.keys(treeData).filter(key =>
+        JSON.stringify(treeData[key]).toLowerCase().includes(q)
+    );
+
+    if (matches.length === 0) {
+        results.textContent = "No matching family found. Try a name, office, relation, or region.";
+        return;
+    }
+
+    matches.forEach(key => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = treeData[key].title;
+        button.setAttribute("aria-label", `Show ${treeData[key].title}`);
+        button.onclick = () => {
+            selectFamily(key);
+            document.getElementById("searchInput").value = treeData[key].title;
+            results.textContent = `Selected: ${treeData[key].title}`;
+        };
+        results.appendChild(button);
+    });
+}
+
+/* =========================
+   MODAL & NAVIGATION UTILS
+========================= */
+
+function openModal(name, info) {
+    document.getElementById("modalTitle").textContent = name;
+    document.getElementById("modalText").textContent = info;
+    document.getElementById("modal").classList.add("active");
+}
+
+function closeModal(event) {
+    if (!event || event.target === document.getElementById("modal") || event.target.className === 'close') {
+        document.getElementById("modal").classList.remove("active");
+    }
+}
+
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+
+/* INITIALIZATION */
+window.onload = () => {
+    const treeContainer = document.getElementById("treeContainer");
+    treeContainer.addEventListener("click", event => {
+        if (event.target.closest("a")) return;
+        const card = event.target.closest(".person-card");
+        if (card) openModal(card.dataset.name, card.dataset.info);
+    });
+
+    document.querySelectorAll(".info-card").forEach(card => {
+        const toggleCard = () => {
+            const expanded = card.classList.toggle("expanded");
+            card.setAttribute("aria-expanded", String(expanded));
+            card.querySelector(".card-hint").textContent = expanded ? "Click to collapse" : "Click to expand";
+        };
+
+        card.addEventListener("click", toggleCard);
+        card.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                toggleCard();
+            }
+        });
+    });
+
+    const infoTrack = document.getElementById("infoTrack");
+    const infoViewport = document.getElementById("infoViewport");
+    const infoSlides = [...infoTrack.querySelectorAll(".info-slide")];
+    const pagination = document.getElementById("infoPagination");
+    let activeInfoSlide = 0;
+    let pointerStartX = null;
+    let ignoreSwipeClick = false;
+    let infoAutoplay;
+
+    const startInfoAutoplay = () => {
+        clearInterval(infoAutoplay);
+        if (!document.hidden) {
+            infoAutoplay = setInterval(() => showInfoSlide(activeInfoSlide + 1), 5000);
+        }
+    };
+
+    const pauseInfoAutoplay = () => clearInterval(infoAutoplay);
+
+    const showInfoSlide = index => {
+        activeInfoSlide = (index + infoSlides.length) % infoSlides.length;
+        infoTrack.style.transform = `translateX(-${activeInfoSlide * 100}%)`;
+        pagination.querySelectorAll("button").forEach((dot, dotIndex) => {
+            dot.setAttribute("aria-current", String(dotIndex === activeInfoSlide));
+        });
+        startInfoAutoplay();
+    };
+
+    infoSlides.forEach((slide, index) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Show topic ${index + 1} of ${infoSlides.length}`);
+        dot.setAttribute("aria-current", String(index === 0));
+        dot.addEventListener("click", () => showInfoSlide(index));
+        pagination.appendChild(dot);
+    });
+
+    document.getElementById("infoPrev").addEventListener("click", () => showInfoSlide(activeInfoSlide - 1));
+    document.getElementById("infoNext").addEventListener("click", () => showInfoSlide(activeInfoSlide + 1));
+
+    infoViewport.addEventListener("pointerenter", pauseInfoAutoplay);
+    infoViewport.addEventListener("pointerleave", startInfoAutoplay);
+    infoViewport.addEventListener("focusin", pauseInfoAutoplay);
+    infoViewport.addEventListener("focusout", event => {
+        if (!infoViewport.contains(event.relatedTarget)) startInfoAutoplay();
+    });
+    infoViewport.addEventListener("pointerdown", event => {
+        pauseInfoAutoplay();
+        pointerStartX = event.clientX;
+    });
+    infoViewport.addEventListener("pointerup", event => {
+        if (pointerStartX === null) return;
+        const distance = event.clientX - pointerStartX;
+        pointerStartX = null;
+        if (Math.abs(distance) > 45) {
+            showInfoSlide(activeInfoSlide + (distance < 0 ? 1 : -1));
+            ignoreSwipeClick = true;
+            setTimeout(() => { ignoreSwipeClick = false; }, 0);
+        }
+        if (!infoViewport.matches(":hover")) startInfoAutoplay();
+    });
+    infoViewport.addEventListener("pointercancel", () => {
+        pointerStartX = null;
+        if (!infoViewport.matches(":hover")) startInfoAutoplay();
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) pauseInfoAutoplay();
+        else startInfoAutoplay();
+    });
+    infoViewport.addEventListener("click", event => {
+        if (ignoreSwipeClick) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }, true);
+    infoViewport.addEventListener("keydown", event => {
+        if (event.key === "ArrowLeft") showInfoSlide(activeInfoSlide - 1);
+        if (event.key === "ArrowRight") showInfoSlide(activeInfoSlide + 1);
+    });
+    startInfoAutoplay();
+
+    populateButtons();
+    renderTree("marcos");
+};
+</script>
+
+</body>
+</html>
